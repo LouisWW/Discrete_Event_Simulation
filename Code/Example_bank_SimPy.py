@@ -15,11 +15,13 @@ to finish. If not, they wait until they an use one.
 """
 import random
 import simpy
+
 RANDOM_SEED = 42
 NUM_MACHINES = 2 # Number of machines in the carwash
 WASHTIME = 5 # Minutes it takes to clean a car
 T_INTER = 7 # Create a car every ~7 minutes
 SIM_TIME = 20 # Simulation time in minutes
+
 class Carwash(object):
     """A carwash has a limited number of machines (``NUM_MACHINES``) to
     clean cars in parallel.
@@ -61,8 +63,8 @@ def setup(env, num_machines, washtime, t_inter):
     # Create more cars while the simulation is running
     while True:
         yield env.timeout(random.randint(t_inter - 2, t_inter + 2))
-    i += 1
-    env.process(car(env, 'Car %d' % i, carwash))
+        i += 1
+        env.process(car(env, 'Car %d' % i, carwash))
 
 # Setup and start the simulation
 print('Carwash')
