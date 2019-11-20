@@ -16,7 +16,7 @@ class Serversystem(object):
 
     def help(self, task, helptime):
         yield self.env.timeout(helptime) # randomness needs to be added here
-        print("Carrying out the task took {}".format(self.env.now))
+        #print("Carrying out the task took {}".format(self.env.now))
 
 
 def task(env, name, ss, mu):
@@ -28,7 +28,7 @@ def task(env, name, ss, mu):
         global_variables.queue_length_list.append(global_variables.queue_length)
         global_variables.queue_time_list.append(env.now)
         yield request
-        print("{} started by server at {}".format(name, env.now))
+        #print("{} started by server at {}".format(name, env.now))
 
         # wait for task to be finished
         helptime = np.random.exponential(1/mu)
@@ -39,7 +39,7 @@ def task(env, name, ss, mu):
         # wait until someone moves out of the queue
         yield env.process(ss.help(name, helptime))
         global_variables.queue_length -= 1
-        print("{} carried out by server at {}".format(name, env.now))
+        #print("{} carried out by server at {}".format(name, env.now))
 
 def setup(env, n_server, mu, l):
     '''Here we create a server system with a certain number of servers. We start creating cars at random'''

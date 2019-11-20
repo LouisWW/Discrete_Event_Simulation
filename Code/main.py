@@ -14,33 +14,47 @@ import os
 n_server  = 1
 mu = 0.5
 l = 0.48
-endtime = 10000
+endtime = 5000
+n_simulations = 1
 
-init_global()
+list_average_queuelength = []
+# run the simulation multiple times
+for i in range(n_simulations):
 
-# create a simpy environment
-env = simpy.Environment()
+    # initialize the global lists
+    init_global()
 
-# set up the system
-env.process(setup(env, n_server, mu, l))
+    # create a simpy environment
+    env = simpy.Environment()
 
-# run the program
-env.run(until=endtime)
+    # set up the system
+    env.process(setup(env, n_server, mu, l))
 
-print(global_variables.list_helptime)
-print(global_variables.list_arrivaltime)
+    # run the program
+    env.run(until=endtime)
 
+    average_queuelength = np.average(global_variables.queue_length_list)
+    print(average_queuelength)
+    list_average_queuelength.append(average_queuelength)
+
+# plot the distribution of the average queue lengths
+plt.figure()
+plt.hist(list_average_queuelength, bins = 100)
+plt.title("The distribution of the average queue lengths of the different simulations")
+
+# plot the distribution of servicing times
 plt.figure()
 plt.title("A histogram of the time helping costs")
 plt.hist(global_variables.list_helptime)
-plt.show()
 
+# plot the distribution of the interarrival times
 plt.figure()
 plt.title("A histogram of the time inbetween arrivals of tasks")
 plt.hist(global_variables.list_arrivaltime)
-plt.show()
 
+# plot the queue length at different times
 plt.figure()
 plt.title("Queue length versus time")
 plt.plot(global_variables.queue_time_list, global_variables.queue_length_list)
 plt.show()
+
