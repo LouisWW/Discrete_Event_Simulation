@@ -3,6 +3,7 @@
 import simpy
 import random as rd
 import numpy as np
+import global_variables
 import os
 
 class Serversystem(object):
@@ -23,38 +24,42 @@ def task(env, name, ss, mu):
     with ss.server.request() as request:
 
         # wait for server to become available
+        global_variables.queue_length += 1
+        global_variables.queue_length_list.append(global_variables.queue_length)
+        global_variables.queue_time_list.append(env.now)
         yield request
         print("{} started by server at {}".format(name, env.now))
 
         # wait for task to be finished
-        t = rd.random()
-        helptime = mu * np.exp(-mu * t)
+        helptime = np.random.exponential(1/mu)
 
+        # append the helptime of a task to a global list
+        global_variables.list_helptime.append(helptime)
+
+        # wait until someone moves out of the queue
         yield env.process(ss.help(name, helptime))
+        global_variables.queue_length -= 1
         print("{} carried out by server at {}".format(name, env.now))
 
 def setup(env, n_server, mu, l):
     '''Here we create a server system with a certain number of servers. We start creating cars at random'''
     serversystem = Serversystem(env, n_server, mu)
 
-    list_arrival = []
-
     i = 0
     # create task until the simulation time is over
     while True:
-        t = rd.random()
-        arrivaltime = 1 - np.exp(-l * t)
-        list_arrival.append(arrivaltime)
+
+        # calculate the arrival time for the next task
+        arrivaltime = np.random.exponential(1/l)
+
+        # append the arrival time to a global list
+        global_variables.list_arrivaltime.append(arrivaltime)
+
         # wait until new task arrives
         yield env.timeout(arrivaltime) # arrival time needs to be made random
         i += 1
         env.process(task(env, 'Task{}'.format(i), serversystem, mu))
 
-        print(list_arrival)
-
-        if False:
-            yield list_arrival
-            return
 
 
 
