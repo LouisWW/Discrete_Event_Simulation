@@ -10,9 +10,12 @@
 # If SimPy is not install yet pleas use the following line to install 
 # it on Mac or Linux
 
-import simpy
-import random
-import os
+def import_packages():
+    import simpy
+    import random as rd
+    import numpy as np
+    import os
+
 
 #os.system("pip install simpy")
 
