@@ -11,11 +11,13 @@ import random as rd
 import numpy as np
 import os
 
-n_server  = 1
-mu = 0.5
+n_server = 2
+mu = 0.25
 l = 0.48
 endtime = 5000
 n_simulations = 1
+sjf = False # use shortest job first
+
 
 list_average_queuelength = []
 # run the simulation multiple times
@@ -28,7 +30,7 @@ for i in range(n_simulations):
     env = simpy.Environment()
 
     # set up the system
-    env.process(setup(env, n_server, mu, l))
+    env.process(setup(env, n_server, mu, l, sjf))
 
     # run the program
     env.run(until=endtime)
@@ -36,6 +38,11 @@ for i in range(n_simulations):
     average_queuelength = np.average(global_variables.queue_length_list)
     print(average_queuelength)
     list_average_queuelength.append(average_queuelength)
+
+# plot the distribution of the average queueing times
+plt.figure()
+plt.hist(global_variables.time_spend_in_queue_list, bins = 100)
+plt.title("The distribution of the average time spend in a queue")
 
 # plot the distribution of the average queue lengths
 plt.figure()

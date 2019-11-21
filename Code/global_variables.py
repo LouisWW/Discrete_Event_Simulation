@@ -11,3 +11,5 @@ def init_global():
     queue_length_list = []
     global queue_time_list
     queue_time_list = []
+    global time_spend_in_queue_list
+    time_spend_in_queue_list = []

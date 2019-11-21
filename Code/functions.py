@@ -11,7 +11,7 @@ class Serversystem(object):
 
     def __init__(self, env, n_server, mu):
         self.env = env
-        self.server = simpy.Resource(env, n_server)
+        self.server = simpy.PriorityResource(env, n_server)
         self.mu = mu # the average help time is 1/mu, so need to incorporate that
 
     def help(self, task, helptime):
@@ -19,29 +19,36 @@ class Serversystem(object):
         #print("Carrying out the task took {}".format(self.env.now))
 
 
-def task(env, name, ss, mu):
+def task(env, name, ss, mu, sjf):
     "A task process that will be carried out by a serversystem (ss) after having waited for a server to become available"
-    with ss.server.request() as request:
+    # wait for server to become available
+    global_variables.queue_length += 1
+    global_variables.queue_length_list.append(global_variables.queue_length)
+    global_variables.queue_time_list.append(env.now)
 
-        # wait for server to become available
-        global_variables.queue_length += 1
-        global_variables.queue_length_list.append(global_variables.queue_length)
-        global_variables.queue_time_list.append(env.now)
+    # calculate how long helping is going to take
+    helptime = np.random.exponential(1 / mu)
+
+    # append the helptime of a task to a global list
+    global_variables.list_helptime.append(helptime)
+
+    if sjf:
+        prio = helptime * 1000
+    else:
+        prio = 0
+
+    with ss.server.request(prio) as request:
+        time_before = env.now
         yield request
         #print("{} started by server at {}".format(name, env.now))
-
-        # wait for task to be finished
-        helptime = np.random.exponential(1/mu)
-
-        # append the helptime of a task to a global list
-        global_variables.list_helptime.append(helptime)
+        global_variables.time_spend_in_queue_list.append(env.now - time_before)
 
         # wait until someone moves out of the queue
         yield env.process(ss.help(name, helptime))
         global_variables.queue_length -= 1
         #print("{} carried out by server at {}".format(name, env.now))
 
-def setup(env, n_server, mu, l):
+def setup(env, n_server, mu, l, sjf):
     '''Here we create a server system with a certain number of servers. We start creating cars at random'''
     serversystem = Serversystem(env, n_server, mu)
 
@@ -58,7 +65,7 @@ def setup(env, n_server, mu, l):
         # wait until new task arrives
         yield env.timeout(arrivaltime) # arrival time needs to be made random
         i += 1
-        env.process(task(env, 'Task{}'.format(i), serversystem, mu))
+        env.process(task(env, 'Task{}'.format(i), serversystem, mu, sjf))
 
 
 
