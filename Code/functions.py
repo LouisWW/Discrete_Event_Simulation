@@ -5,6 +5,8 @@ import random as rd
 import numpy as np
 import global_variables
 import os
+from scipy.optimize import curve_fit
+from scipy.special import factorial
 
 class Serversystem(object):
     "A server has n desks at which tasks can be carried out, if all desks are in use, a task has to wait"
@@ -33,7 +35,7 @@ def task(env, name, ss, mu, sjf):
     global_variables.list_helptime.append(helptime)
 
     if sjf:
-        prio = helptime * 1000
+        prio = int(helptime * 1000)
     else:
         prio = 0
 
@@ -68,7 +70,18 @@ def setup(env, n_server, mu, l, sjf):
         env.process(task(env, 'Task{}'.format(i), serversystem, mu, sjf))
 
 
+# poisson function, parameter lamb is the fit parameter
+def poisson(k, lamb, scale):
+    return scale*(lamb**k/factorial(k))*np.exp(-lamb)
 
+
+def poisson_fit(entries, bin_edges, x_plot):
+    # calculate binmiddles
+    bin_middles = 0.5 * (bin_edges[1:] + bin_edges[:-1])
+    # fit with curve_fit
+    parameters, cov_matrix = curve_fit(poisson, bin_middles, entries, p0=[0.5, 50])
+    # plot poisson-deviation with fitted parameter
+    return poisson(x_plot, *parameters)
 
 
 
