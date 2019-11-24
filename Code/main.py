@@ -16,9 +16,9 @@ from scipy.special import factorial
 n_server = 1
 mu = 0.50
 l = 0.48
-endtime = 5000
-n_simulations = 1500
-sjf = False # use shortest job first
+endtime = 8000
+n_simulations = 100
+sjf = False  # use shortest job first
 main_program = False
 different_rho_comparison = True
 
@@ -123,8 +123,8 @@ if main_program:
 if different_rho_comparison:
     list_nf_confidence_average_queuetimes = []
     list_total_average_queuetimes = []
-
-    for mu in np.arange(l, 1, 0.1):
+    mu_range = np.arange(l+0.01, 0.8, 0.04)
+    for mu in mu_range:
         list_average_queuelength = []
         list_average_queuingtimes = []
 
@@ -153,15 +153,21 @@ if different_rho_comparison:
 
         total_average_queuetimes = np.average(list_average_queuingtimes)
         list_total_average_queuetimes.append(total_average_queuetimes)
-        variance_average_queuetimes = 1. / (n_simulations - 1.) * sum(list_average_queuingtimes - total_average_queuetimes)
+        variance_average_queuetimes = len(global_variables.queue_length_list) / (n_simulations - 1.) * sum((list_average_queuingtimes - total_average_queuetimes)**2)
         nf_confidence_average_queuetimes = 1.96 * np.sqrt(variance_average_queuetimes/n_simulations)
         list_nf_confidence_average_queuetimes.append(nf_confidence_average_queuetimes)
-        print(nf_confidence_average_queuelength)
+
+    theoretical_waitingtime = (l/mu_range)/(l*(1.-(l/mu_range)**2))
+    print(l/mu_range)
+    print(l*(1.-(l/mu_range)**2))
 
     plt.figure()
-    plt.errorbar(np.arange(l, 1, 0.1), list_total_average_queuetimes, nf_confidence_average_queuetimes)
+    plt.errorbar(mu_range, list_total_average_queuetimes, nf_confidence_average_queuetimes)
+    plt.plot(mu_range, theoretical_waitingtime, 'r')
     plt.title("Average queueing times versus rho")
     plt.xlabel("value of mu (a.u.)", fontsize=20)
     plt.ylabel("Average time spent in queue (a.u.)", fontsize=20)
+    plt.savefig("queueingtimedifferentrhoscomparison.png", dpi=300)
+
 
 plt.show()
