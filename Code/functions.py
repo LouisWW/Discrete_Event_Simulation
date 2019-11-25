@@ -80,18 +80,17 @@ def poisson(k, lamb, scale):
 
 
 def poisson_fit(entries, bin_edges, x_plot):
-    # calculate binmiddles
+    # calculate bin middles
     bin_middles = 0.5 * (bin_edges[1:] + bin_edges[:-1])
     # fit with curve_fit
     parameters, cov_matrix = curve_fit(poisson, bin_middles, entries, p0=[0.5, 50])
     # plot poisson-deviation with fitted parameter
     return poisson(x_plot, *parameters)
 
-
 def batch_averages(batch_size, initialisation_period):
     shortened_queuing_times = global_variables.time_spend_in_queue_list[initialisation_period:-1]
     list_batch_averages = []
-    for i in range(0,len(shortened_queuing_times)/batch_size,2):
+    for i in range(0, len(shortened_queuing_times)/batch_size,2):
         list_batch_averages.append(np.average(shortened_queuing_times[i*batch_size:(i+1)*batch_size]))
 
     return list_batch_averages

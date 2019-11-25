@@ -16,9 +16,9 @@ from scipy.special import factorial
 n_server = 1
 mu = 0.80
 l = 0.64
-end_n_actions = 100000
-batch_size = 25000 - 250
-initialisation_period = 1000
+end_n_actions = 200000
+batch_size = 1000
+initialisation_period = 10000
 n_simulations = 1
 n_batches = (end_n_actions-initialisation_period)/batch_size/2.
 print("this is the number of batches", n_batches)
@@ -54,8 +54,8 @@ for i in range(n_simulations):
     print("Now at simulation {}".format(i))
 
 print(list_batch_averages, np.average(list_batch_averages))
-print("this is the sum",np.sum((list_batch_averages - np.average(list_batch_averages))**2))
-variance = batch_size / (n_batches-1) * np.sum((list_batch_averages - np.average(list_batch_averages))**2)
+print("this is the sum", np.sum((list_batch_averages - np.average(list_batch_averages))**2))
+variance = 1 / (n_batches - 1) * np.sum((list_batch_averages - np.average(list_batch_averages))**2)
 print("variance", variance)
 standard_deviation = np.sqrt(variance)
 ########################################################################################################
@@ -63,6 +63,9 @@ standard_deviation = np.sqrt(variance)
 print("The average queueing time is {} +- {}".format(np.average(list_batch_averages), standard_deviation))
 plt.figure()
 plt.plot(list_batch_averages)
+
+plt.figure()
+plt.hist(list_batch_averages)
 plt.show()
 
 
