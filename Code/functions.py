@@ -29,7 +29,7 @@ def task(env, name, ss, mu, sjf):
     global_variables.queue_time_list.append(env.now)
 
     # calculate how long helping is going to take
-    helptime = np.random.exponential(1 / mu)
+    helptime = np.random.exponential(1/mu)  # generates pdf mu * exp(-mu*x)
 
     # append the helptime of a task to a global list
     global_variables.list_helptime.append(helptime)
@@ -50,7 +50,7 @@ def task(env, name, ss, mu, sjf):
         global_variables.queue_length -= 1
         #print("{} carried out by server at {}".format(name, env.now))
 
-def setup(env, n_server, mu, l, sjf):
+def setup(env, n_server, mu, l, sjf, end_n_actions):
     '''Here we create a server system with a certain number of servers. We start creating cars at random'''
     serversystem = Serversystem(env, n_server, mu)
 
@@ -59,16 +59,20 @@ def setup(env, n_server, mu, l, sjf):
     while True:
 
         # calculate the arrival time for the next task
-        arrivaltime = np.random.exponential(1/l)
+        arrivaltime = np.random.exponential(1/l) # generates pdf l * exp(-l*x)
 
         # append the arrival time to a global list
         global_variables.list_arrivaltime.append(arrivaltime)
 
         # wait until new task arrives
         yield env.timeout(arrivaltime) # arrival time needs to be made random
-        i += 1
-        env.process(task(env, 'Task{}'.format(i), serversystem, mu, sjf))
 
+        i += 1
+        task_ref = env.process(task(env, 'Task{}'.format(i), serversystem, mu, sjf))
+
+        if i == end_n_actions:
+            yield task_ref
+            break
 
 # poisson function, parameter lamb is the fit parameter
 def poisson(k, lamb, scale):
@@ -84,5 +88,10 @@ def poisson_fit(entries, bin_edges, x_plot):
     return poisson(x_plot, *parameters)
 
 
+def batch_averages(batch_size, initialisation_period):
+    shortened_queuing_times = global_variables.time_spend_in_queue_list[initialisation_period:-1]
+    list_batch_averages = []
+    for i in range(0,len(shortened_queuing_times)/batch_size,2):
+        list_batch_averages.append(np.average(shortened_queuing_times[i*batch_size:(i+1)*batch_size]))
 
-
+    return list_batch_averages
