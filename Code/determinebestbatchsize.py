@@ -26,7 +26,7 @@ list_average_queuelength = []
 list_average_queuingtimes = []
 list_stddev = []
 
-diff_batchsizes = np.arange(1,20000,1000)
+diff_batchsizes = np.arange(1,30000,6000)
 
 # run the simulation multiple times
 for i in diff_batchsizes:

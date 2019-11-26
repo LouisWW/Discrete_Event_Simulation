@@ -94,3 +94,10 @@ def batch_averages(batch_size, initialisation_period):
         list_batch_averages.append(np.average(shortened_queuing_times[i*batch_size:(i+1)*batch_size]))
 
     return list_batch_averages
+
+def calc_varci(list_batch_averages, n_batches):
+    variance = 1 / (n_batches - 1) * np.sum((list_batch_averages - np.average(list_batch_averages)) ** 2)
+    standard_deviation = np.sqrt(variance)
+    confidence_interval = 1.96 * variance/np.sqrt(n_batches)
+
+    return standard_deviation, confidence_interval
