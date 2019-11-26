@@ -14,15 +14,16 @@ from scipy.optimize import curve_fit
 from scipy.special import factorial
 
 n_server = 1
-mu = 0.50
-l = 0.48
-end_n_actions = 600000
+mu = 0.80
+l = 0.64
+end_n_actions = 3600000
 batch_size = 8000
-initialisation_period = 10000
+initialisation_period = 1
 n_simulations = 1
 n_batches = (end_n_actions-initialisation_period)/batch_size/2.
 print("this is the number of batches", n_batches)
 sjf = False  # use shortest job first
+db_helptime = "LT"  # choice between M, D, LT
 
 list_average_queuelength = []
 list_average_queuingtimes = []
@@ -31,13 +32,13 @@ list_average_queuingtimes = []
 for i in range(n_simulations):
 
     # initialize the global lists
-    init_global()
+    init_global(end_n_actions)
 
     # create a simpy environment
     env = simpy.Environment()
 
     # set up the system
-    env.process(setup(env, n_server, mu, l, sjf, end_n_actions))
+    env.process(setup(env, n_server, mu, l, sjf, end_n_actions, db_helptime))
 
     # run the program
     env.run()

@@ -41,7 +41,7 @@ for mu in mu_range:
         env = simpy.Environment()
 
         # set up the system
-        env.process(setup(env, n_server, mu, l, sjf, end_n_actions))
+        env.process(setup(env, n_server, mu, l, sjf, end_n_actions, "M"))
 
         # run the program
         env.run()
@@ -66,9 +66,14 @@ plt.figure()
 plt.errorbar(l/mu_range, list_total_average_queuetimes, list_nf_confidence_average_queuetimes)
 plt.plot(l/mu_range, theoretical_waitingtime, 'r')
 plt.title("Average queueing times versus rho")
+plt.yscale("log")
 plt.xlabel("value of rho (a.u.)", fontsize=16)
 plt.ylabel("Average time spent in queue (a.u.)", fontsize=16)
 plt.savefig("queueingtimedifferentrhoscomparison.png", dpi=300)
 
+print("The theoretical values: ", theoretical_waitingtime)
+print("The expiremental values: ", list_total_average_queuetimes)
+print("The variances: ", list_nf_confidence_average_queuetimes)
+print("The rho values: ", (l/mu_range))
 
 plt.show()

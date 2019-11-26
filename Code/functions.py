@@ -7,6 +7,7 @@ import global_variables
 import os
 from scipy.optimize import curve_fit
 from scipy.special import factorial
+import random as rd
 
 class Serversystem(object):
     "A server has n desks at which tasks can be carried out, if all desks are in use, a task has to wait"
@@ -21,18 +22,26 @@ class Serversystem(object):
         #print("Carrying out the task took {}".format(self.env.now))
 
 
-def task(env, name, ss, mu, sjf):
+def task(env, name, ss, mu, sjf, db_helptime, counter):
     "A task process that will be carried out by a serversystem (ss) after having waited for a server to become available"
     # wait for server to become available
     global_variables.queue_length += 1
-    global_variables.queue_length_list.append(global_variables.queue_length)
-    global_variables.queue_time_list.append(env.now)
+    global_variables.queue_length_list[counter] = global_variables.queue_length
+    global_variables.queue_time_list[counter] = env.now
 
     # calculate how long helping is going to take
-    helptime = np.random.exponential(1/mu)  # generates pdf mu * exp(-mu*x)
+    if db_helptime == "M":
+        helptime = np.random.exponential(1/mu)  # generates pdf mu * exp(-mu*x)
+    if db_helptime == "D":
+        helptime = 1/mu
+    if db_helptime == "LT":
+        if np.random.rand() < 0.75:
+            helptime = np.random.exponential(1)  # average helptime of 1.0
+        else:
+            helptime = np.random.exponential(5)  # average helptime of 1.
 
     # append the helptime of a task to a global list
-    global_variables.list_helptime.append(helptime)
+    global_variables.list_helptime[counter] = helptime
 
     if sjf:
         prio = int(helptime * 1000)
@@ -43,18 +52,18 @@ def task(env, name, ss, mu, sjf):
         time_before = env.now
         yield request
         #print("{} started by server at {}".format(name, env.now))
-        global_variables.time_spend_in_queue_list.append(env.now - time_before)
+        global_variables.time_spend_in_queue_list[counter] = env.now - time_before
 
         # wait until someone moves out of the queue
         yield env.process(ss.help(name, helptime))
         global_variables.queue_length -= 1
         #print("{} carried out by server at {}".format(name, env.now))
 
-def setup(env, n_server, mu, l, sjf, end_n_actions):
+def setup(env, n_server, mu, l, sjf, end_n_actions, db_helptime):
     '''Here we create a server system with a certain number of servers. We start creating cars at random'''
     serversystem = Serversystem(env, n_server, mu)
 
-    i = 0
+    counter = 0
     # create task until the simulation time is over
     while True:
 
@@ -62,15 +71,15 @@ def setup(env, n_server, mu, l, sjf, end_n_actions):
         arrivaltime = np.random.exponential(1/l) # generates pdf l * exp(-l*x)
 
         # append the arrival time to a global list
-        global_variables.list_arrivaltime.append(arrivaltime)
+        global_variables.list_arrivaltime[counter]=arrivaltime
 
         # wait until new task arrives
         yield env.timeout(arrivaltime) # arrival time needs to be made random
 
-        i += 1
-        task_ref = env.process(task(env, 'Task{}'.format(i), serversystem, mu, sjf))
-
-        if i == end_n_actions:
+        counter += 1
+        task_ref = env.process(task(env, 'Task{}'.format(counter), serversystem, mu, sjf, db_helptime, counter))
+        print(counter)
+        if counter == end_n_actions:
             yield task_ref
             break
 
