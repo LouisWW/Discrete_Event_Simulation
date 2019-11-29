@@ -20,6 +20,7 @@ end_n_actions = 600000
 batch_size = 8000
 initialisation_period = 10000
 n_simulations = 1
+LT_value = 5
 n_batches = (end_n_actions-initialisation_period)/batch_size/2.
 sjf = False  # use shortest job first
 
@@ -41,7 +42,7 @@ for mu in mu_range:
         env = simpy.Environment()
 
         # set up the system
-        env.process(setup(env, n_server, mu, l, sjf, end_n_actions, "M"))
+        env.process(setup(env, n_server, mu, l, sjf, end_n_actions, "M", LT_value))
 
         # run the program
         env.run()
@@ -73,7 +74,7 @@ plt.savefig("queueingtimedifferentrhoscomparison.png", dpi=300)
 
 print("The theoretical values: ", theoretical_waitingtime)
 print("The expiremental values: ", list_total_average_queuetimes)
-print("The variances: ", list_nf_confidence_average_queuetimes)
+print("The 95 confidence interval: ", list_nf_confidence_average_queuetimes)
 print("The rho values: ", (l/mu_range))
 
 plt.show()

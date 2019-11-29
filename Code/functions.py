@@ -22,7 +22,7 @@ class Serversystem(object):
         #print("Carrying out the task took {}".format(self.env.now))
 
 
-def task(env, name, ss, mu, sjf, db_helptime, counter):
+def task(env, name, ss, mu, sjf, db_helptime, counter, LT_value):
     "A task process that will be carried out by a serversystem (ss) after having waited for a server to become available"
     # wait for server to become available
     global_variables.queue_length += 1
@@ -37,8 +37,10 @@ def task(env, name, ss, mu, sjf, db_helptime, counter):
     if db_helptime == "LT":
         if np.random.rand() < 0.75:
             helptime = np.random.exponential(1)  # average helptime of 1.0
+            print("this mu = 1")
         else:
-            helptime = np.random.exponential(5)  # average helptime of 1.
+            helptime = np.random.exponential(LT_value)  # average helptime of 5.
+            print("this mu = 0.2")
 
     # append the helptime of a task to a global list
     global_variables.list_helptime[counter] = helptime
@@ -59,7 +61,7 @@ def task(env, name, ss, mu, sjf, db_helptime, counter):
         global_variables.queue_length -= 1
         #print("{} carried out by server at {}".format(name, env.now))
 
-def setup(env, n_server, mu, l, sjf, end_n_actions, db_helptime):
+def setup(env, n_server, mu, l, sjf, end_n_actions, db_helptime, LT_value):
     '''Here we create a server system with a certain number of servers. We start creating cars at random'''
     serversystem = Serversystem(env, n_server, mu)
 
@@ -77,7 +79,7 @@ def setup(env, n_server, mu, l, sjf, end_n_actions, db_helptime):
         yield env.timeout(arrivaltime) # arrival time needs to be made random
 
         counter += 1
-        task_ref = env.process(task(env, 'Task{}'.format(counter), serversystem, mu, sjf, db_helptime, counter))
+        task_ref = env.process(task(env, 'Task{}'.format(counter), serversystem, mu, sjf, db_helptime, counter, LT_value))
         print(counter)
         if counter == end_n_actions:
             yield task_ref

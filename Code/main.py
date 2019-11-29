@@ -16,14 +16,15 @@ from scipy.special import factorial
 n_server = 1
 mu = 0.80
 l = 0.64
-end_n_actions = 3600000
+end_n_actions = 600000
 batch_size = 8000
-initialisation_period = 1
+initialisation_period = 10000
 n_simulations = 1
+LT_value = 5
 n_batches = (end_n_actions-initialisation_period)/batch_size/2.
 print("this is the number of batches", n_batches)
-sjf = False  # use shortest job first
-db_helptime = "LT"  # choice between M, D, LT
+sjf = True  # use shortest job first
+db_helptime = "D"  # choice between M, D, LT
 
 list_average_queuelength = []
 list_average_queuingtimes = []
@@ -38,7 +39,7 @@ for i in range(n_simulations):
     env = simpy.Environment()
 
     # set up the system
-    env.process(setup(env, n_server, mu, l, sjf, end_n_actions, db_helptime))
+    env.process(setup(env, n_server, mu, l, sjf, end_n_actions, db_helptime, LT_value))
 
     # run the program
     env.run()

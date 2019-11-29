@@ -20,6 +20,7 @@ end_n_actions = 60000
 repetitions = 30
 initialisation_period = 10000
 n_simulations = 1
+LT_value = 5
 sjf = False  # use shortest job first
 
 list_average_queuelength = []
@@ -43,7 +44,7 @@ for i in diff_batchsizes:
         env = simpy.Environment()
 
         # set up the system
-        env.process(setup(env, n_server, mu, l, sjf, end_n_actions))
+        env.process(setup(env, n_server, mu, l, sjf, end_n_actions, "M", LT_value))
 
         # run the program
         env.run()
