@@ -1,9 +1,8 @@
+'''This program compares the waiting times for different values of rho '''
+
 from functions import *
-from packages import *
 from global_variables import init_global
 
-# initialize global variables, probably also an idea for the other variables that need to be used
-import_packages()
 
 import simpy
 import matplotlib.pyplot as plt
@@ -22,7 +21,7 @@ initialisation_period = 10000
 n_simulations = 1
 LT_value = 5
 n_batches = (end_n_actions-initialisation_period)/batch_size/2.
-sjf = False  # use shortest job first
+sjf = False  # True to use shortest job first
 
 '''Run simulation for different values of rho'''
 list_nf_confidence_average_queuetimes = []

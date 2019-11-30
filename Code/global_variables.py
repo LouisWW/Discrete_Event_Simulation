@@ -2,6 +2,7 @@
 
 import numpy as np
 
+# initialise global variables they can be accessed from everywhere
 def init_global(end_n_actions):
     global list_arrivaltime
     list_arrivaltime = np.zeros(end_n_actions+1)

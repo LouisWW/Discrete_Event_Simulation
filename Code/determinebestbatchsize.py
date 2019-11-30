@@ -1,9 +1,5 @@
 from functions import *
-from packages import *
 from global_variables import init_global
-
-# initialize global variables, probably also an idea for the other variables that need to be used
-import_packages()
 
 import simpy
 import matplotlib.pyplot as plt
@@ -27,7 +23,7 @@ list_average_queuelength = []
 list_average_queuingtimes = []
 list_stddev = []
 
-diff_batchsizes = np.arange(1,30000,6000)
+diff_batchsizes = np.arange(1, 30000, 6000)
 
 # run the simulation multiple times
 for i in diff_batchsizes:
@@ -48,7 +44,6 @@ for i in diff_batchsizes:
 
         # run the program
         env.run()
-        # print("The number of measurements: ", len(global_variables.queue_length_list))
 
         average_queuelength = np.average(global_variables.queue_length_list)
         list_average_queuelength.append(average_queuelength)
@@ -60,9 +55,6 @@ for i in diff_batchsizes:
         variance = 1 / (n_batches - 1) * np.sum((list_batch_averages - np.average(list_batch_averages))**2)
         total_standard_deviation += np.sqrt(variance)
     list_stddev.append(total_standard_deviation/repetitions)
-
-# np.save(list_stddev, "list_stddev")
-# np.save(diff_batchsizes, "diff_batchsizes")
 
 plt.figure()
 ax = plt.gca()

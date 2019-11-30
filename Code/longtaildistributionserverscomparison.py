@@ -1,9 +1,5 @@
 from functions import *
-from packages import *
 from global_variables import init_global
-
-# initialize global variables, probably also an idea for the other variables that need to be used
-import_packages()
 
 import simpy
 import matplotlib.pyplot as plt
@@ -22,7 +18,6 @@ initialisation_period = 10000
 n_simulations = 30
 LT_value = 5
 n_batches = (end_n_actions-initialisation_period)/batch_size/2.
-print("this is the number of batches", n_batches)
 sjf = False  # use shortest job first
 db_helptime = "LT"  # choice between M, D, LT
 LT_values = [1, 1.5, 3, 4, 5]
@@ -37,7 +32,7 @@ i = 0
 for n_server in diff_serverns:
     queuelengthforrepetitios = np.zeros((n_simulations, end_n_actions + 1))
 
-    for j in range(0,n_simulations):
+    for j in range(0, n_simulations):
         mu = 0.80
         l = 0.64*n_server
 
@@ -53,7 +48,6 @@ for n_server in diff_serverns:
 
         # run the program
         env.run()
-        # print("The number of measurements: ", len(global_variables.queue_length_list))
 
         average_queuelength = np.average(global_variables.queue_length_list)
         list_average_queuelength.append(average_queuelength)

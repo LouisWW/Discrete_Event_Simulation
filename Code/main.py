@@ -1,10 +1,7 @@
+'''Made by Louis Weyland & Robin van den Berg'''
+
 from functions import *
-from packages import *
 from global_variables import init_global
-
-# initialize global variables, probably also an idea for the other variables that need to be used
-import_packages()
-
 import simpy
 import matplotlib.pyplot as plt
 import random as rd
@@ -77,7 +74,6 @@ entries, bin_edges, patches = plt.hist(global_variables.time_spend_in_queue_list
 plt.title("The distribution of queueing times", fontsize=14)
 plt.xlabel("Queueing times (a.u.)", fontsize=16, fontweight='bold')
 plt.ylabel("Occurrence (#)", fontsize=16, fontweight='bold')
-plt.savefig("onesim_queueingtimes_distribution.png", dpi=300)
 
 ########################################################################################################
 
@@ -88,9 +84,6 @@ entries, bin_edges, patches = plt.hist(list_average_queuelength, bins = 100, nor
 plt.title("The distribution of the average queue lengths\n of the different simulations", fontsize=14)
 plt.xlabel("Average queueing lengths (#)", fontsize=16, fontweight='bold')
 plt.ylabel("Occurrence (#)", fontsize=16, fontweight='bold')
-# fit poisson distribution to data
-# x_plot = np.linspace(1, 60, 1000)
-# plt.plot(x_plot, poisson_fit(entries, bin_edges, x_plot), 'r-', lw=2)
 
 
 ########################################################################################################
@@ -128,8 +121,7 @@ entries, bin_edges, patches = plt.hist(list_average_queuingtimes, bins = 100)
 plt.title("The distribution of the average queueing times\n of the different simulations", fontsize=14)
 plt.xlabel("Average queueing times (a.u.)", fontsize=16, fontweight='bold')
 plt.ylabel("Occurrence (#)", fontsize=16, fontweight='bold')
-# x_plot = np.linspace(0, 60, 1000)
-# plt.plot(x_plot, poisson_fit(entries, bin_edges, x_plot), 'r-', lw=2)
+
 
 plt.show()
 

@@ -1,9 +1,6 @@
 from functions import *
-from packages import *
 from global_variables import init_global
 
-# initialize global variables, probably also an idea for the other variables that need to be used
-import_packages()
 
 import simpy
 import matplotlib.pyplot as plt
